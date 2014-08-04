@@ -2,9 +2,8 @@ package locksdemo;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import java.util.Map;
-
-import locksdemo.Application;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,16 +26,16 @@ public class ApplicationTests {
 	private int port = 0;
 
 	@Test
-	public void catalogLoads() {
+	public void locksLoad() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity("http://localhost:" + port + "/v2/apps", Map.class);
+		ResponseEntity<List> entity = new TestRestTemplate().getForEntity("http://localhost:" + port, List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
 	@Test
-	public void adminLoads() {
+	public void createLock() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity("http://localhost:" + port + "/admin/env", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().postForEntity("http://localhost:" + port + "/foo", "bar", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
