@@ -92,5 +92,13 @@ public class LocksController {
 		return new ResponseEntity<Map<String, Object>>(body, HttpStatus.NOT_FOUND);
 	}
 
+	@ExceptionHandler(LockNotHeldException.class)
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> lockNotHeld() {
+		Map<String, Object> body = new HashMap<String, Object>();
+		body.put("status", "INVALID");
+		body.put("description", "Lock not held (values do not match)");
+		return new ResponseEntity<Map<String, Object>>(body, HttpStatus.NOT_FOUND);
+	}
 
 }
