@@ -64,7 +64,7 @@ public class SimpleLockService implements LockService {
 	@Override
 	public boolean release(final String name, final String value) {
 		reap(name);
-		Lock lock = locks.findOne(name);
+		final Lock lock = locks.findOne(name);
 		if (lock == null) {
 			return false;
 		}
@@ -81,7 +81,7 @@ public class SimpleLockService implements LockService {
 			public Lock modify(Lock current) {
 				Lock lock = reap(name);
 				if (lock != null) {
-					throw new LockExpiredException();
+					throw new LockNotHeldException();
 				}
 				if (!current.getValue().equals(value)) {
 					throw new LockNotHeldException();
