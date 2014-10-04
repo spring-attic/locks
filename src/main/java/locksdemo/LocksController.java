@@ -74,15 +74,6 @@ public class LocksController {
 		return new ResponseEntity<Map<String, Object>>(body, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(LockExpiredException.class)
-	@ResponseBody
-	public ResponseEntity<Map<String, Object>> lockExpired() {
-		Map<String, Object> body = new HashMap<String, Object>();
-		body.put("status", "INVALID");
-		body.put("description", "Lock expired");
-		return new ResponseEntity<Map<String, Object>>(body, HttpStatus.NOT_FOUND);
-	}
-
 	@ExceptionHandler(NoSuchLockException.class)
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> noSuchLock() {

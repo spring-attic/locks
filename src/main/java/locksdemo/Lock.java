@@ -19,16 +19,31 @@ import java.util.Date;
 
 import lombok.Data;
 
+/**
+ * A value object representing a named lock, with a globally unique value and an expiry.
+ * @author Dave Syer
+ *
+ */
 @Data
 public class Lock implements Comparable<Lock> {
-	
+
+	/**
+	 * The name of the lock.
+	 */
 	private final String name;
+	/**
+	 * The value of the lock (globally unique, or at least different for locks with the
+	 * same name and different expiry).
+	 */
 	private final String value;
+	/**
+	 * The expiry of the lock expressed as a point in time.
+	 */
 	private final Date expires;
 
 	@Override
 	public int compareTo(Lock other) {
 		return expires.compareTo(other.expires);
 	}
-	
+
 }
