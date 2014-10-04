@@ -77,7 +77,9 @@ public class RedisLockService implements LockService {
 		}
 		String value = UUID.randomUUID().toString();
 		String key = keyForName(name);
-		redisOperations.opsForValue().set(key, value);
+		if (!redisOperations.opsForValue().setIfAbsent(key, value)) {
+			throw new LockExistsException();
+		}
 		redisOperations.expire(key, expiry, TimeUnit.MILLISECONDS);
 		Date expires = new Date(System.currentTimeMillis() + expiry);
 		return new Lock(name, value, expires);
