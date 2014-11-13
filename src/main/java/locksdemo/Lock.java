@@ -18,6 +18,7 @@ package locksdemo;
 import java.util.Date;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * A value object representing a named lock, with a globally unique value and an expiry.
@@ -25,6 +26,7 @@ import lombok.Data;
  *
  */
 @Data
+@ToString
 public class Lock implements Comparable<Lock> {
 
 	/**
@@ -40,6 +42,10 @@ public class Lock implements Comparable<Lock> {
 	 * The expiry of the lock expressed as a point in time.
 	 */
 	private final Date expires;
+	
+	public boolean isExpired() {
+		return expires.before(new Date());
+	}
 
 	@Override
 	public int compareTo(Lock other) {
