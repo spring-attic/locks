@@ -24,7 +24,7 @@ package locksdemo;
  * holder to prove that he holds the lock. The value is thus unique per lock and per
  * expiry period (i.e. 2 locks held at different times with the same name will have
  * different values)..
- * 
+ *
  * @author Dave Syer
  *
  */
@@ -32,7 +32,6 @@ public interface LockService {
 
 	/**
 	 * Iterate the existing locks.
-	 * 
 	 * @return an iterable of all locks
 	 */
 	Iterable<Lock> findAll();
@@ -42,7 +41,6 @@ public interface LockService {
 	 * hold the lock with this name at any given time. Locks expire and can also be
 	 * released by the owner, so after either of those events the lock can be acquired by
 	 * the same or a different process.
-	 * 
 	 * @param name the name identifying the lock
 	 * @return a Lock containing a value that can be used to release or refresh the lock
 	 * @throws LockExistsException
@@ -52,7 +50,6 @@ public interface LockService {
 	/**
 	 * Release a lock before it expires. Only the holder of a lock can release it, and the
 	 * holder must have the correct unique value to prove that he holds it.
-	 * 
 	 * @param name the name of the lock
 	 * @param value the value of the lock (which has to match the value when it was
 	 * acquired)
@@ -66,7 +63,6 @@ public interface LockService {
 	 * hold the lock there will be an exception, but the implementation may not be able to
 	 * tell if it was because he formerly held the lock and it expired, or if it simply
 	 * was never held.
-	 * 
 	 * @param name the name of the lock
 	 * @param value the value of the lock (which has to match the value when it was
 	 * acquired)

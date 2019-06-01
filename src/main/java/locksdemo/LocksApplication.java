@@ -20,42 +20,49 @@ public class LocksApplication extends WebMvcConfigurerAdapter {
 	public static void main(String[] args) {
 		SpringApplication.run(LocksApplication.class, args);
 	}
-	
+
 	@Bean
 	public LocksController locksController(LockService lockService) {
 		return new LocksController(lockService);
 	}
-	
+
 	@ConditionalOnClass(RedisConnectionFactory.class)
 	@ConditionalOnBean(RedisConnectionFactory.class)
 	@Configuration
 	protected static class RedisLockServiceConfiguration {
+
 		@Bean
 		@ConditionalOnMissingBean(LockService.class)
 		public RedisLockService lockService(RedisConnectionFactory connectionFactory) {
 			return new RedisLockService(connectionFactory);
 		}
+
 	}
 
 	@ConditionalOnClass(RedisConnectionFactory.class)
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	@Configuration
 	protected static class FallbackSimpleLockServiceConfiguration {
+
 		@Bean
 		@ConditionalOnMissingBean(LockService.class)
 		public SimpleLockService lockService() {
 			return new SimpleLockService();
 		}
+
 	}
 
-	@ConditionalOnMissingClass(name="org.springframework.data.redis.connection.RedisConnectionFactory")
+	@ConditionalOnMissingClass(
+			name = "org.springframework.data.redis.connection.RedisConnectionFactory")
 	@Configuration
 	protected static class SimpleLockServiceConfiguration {
+
 		@Bean
 		@ConditionalOnMissingBean(LockService.class)
 		public SimpleLockService lockService() {
 			return new SimpleLockService();
 		}
+
 	}
 
 }
