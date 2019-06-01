@@ -15,7 +15,6 @@
  */
 package locksdemo;
 
-
 /**
  * @author Dave Syer
  *
@@ -23,15 +22,15 @@ package locksdemo;
 public class SimpleLockServiceTests extends AbstractLockServiceTests {
 
 	private SimpleLockService service = new SimpleLockService();
-	
+
 	@Override
 	protected LockService getLockService() {
 		return service;
 	}
-	
+
 	@Override
 	protected void setExpiry(long expiry) {
 		service.setExpiry(expiry);
-	}	
+	}
 
 }

@@ -28,15 +28,14 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Dave Syer
- *
  */
 @Service
 @ConfigurationProperties("spring.platform.lock")
 public class SimpleLockService implements LockService {
 
-	private final SimpleInMemoryRepository<Lock> locks = new SimpleInMemoryRepository<Lock>();
+	private final SimpleInMemoryRepository<Lock> locks = new SimpleInMemoryRepository<>();
 
-	private final PriorityQueue<Lock> ordered = new PriorityQueue<Lock>();
+	private final PriorityQueue<Lock> ordered = new PriorityQueue<>();
 
 	@Setter
 	private long expiry = 30000; // 30 seconds

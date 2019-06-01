@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.springframework.data.redis.core.RedisOperations;
 
-
 /**
  * @author Dave Syer
  *
@@ -27,30 +26,31 @@ import org.springframework.data.redis.core.RedisOperations;
 public class RedisLockServiceTests extends AbstractLockServiceTests {
 
 	private RedisLockService service;
-	
+
 	@ClassRule
 	public static RedisServer server = RedisServer.running();
-	
+
 	@Before
 	public void init() {
 		super.init();
-		RedisOperations<String, String> template = RedisUtils.stringTemplate(server.getResource());
+		RedisOperations<String, String> template = RedisUtils
+				.stringTemplate(server.getResource());
 		template.delete("spring.lock.foo");
 		template.delete("spring.lock.bar");
 	}
-	
+
 	@Override
 	protected LockService getLockService() {
-		if (service==null) {			
+		if (service == null) {
 			service = new RedisLockService(server.getResource());
 		}
 		return service;
 	}
-	
+
 	@Override
 	protected void setExpiry(long expiry) {
 		getLockService();
 		service.setExpiry(expiry);
-	}	
+	}
 
 }

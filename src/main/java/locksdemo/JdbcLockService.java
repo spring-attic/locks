@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Dave Syer
- *
  */
 public class JdbcLockService implements LockService {
 
@@ -42,10 +41,15 @@ public class JdbcLockService implements LockService {
 	private long expiry = 30000; // 30 seconds
 
 	private RowMapper<Lock> rowMapper = new LockRowMapper();
+
 	private String findAllQuery = "SELECT NAME,VALUE,EXPIRES FROM LOCKS";
+
 	private String createQuery = "INSERT INTO LOCKS (NAME,VALUE,EXPIRES) VALUES (?,?,?)";
+
 	private String deleteQuery = "DELETE FROM LOCKS WHERE NAME=? AND VALUE=?";
+
 	private String refreshQuery = "UPDATE LOCKS SET EXPIRES=? WHERE NAME=? AND VALUE=?";
+
 	private String findOneByNameQuery = "SELECT NAME,VALUE,EXPIRES FROM LOCKS WHERE NAME=?";
 
 	public JdbcLockService(DataSource dataSource) {
@@ -69,8 +73,8 @@ public class JdbcLockService implements LockService {
 				throw new LockExistsException();
 			}
 		}
-		lock = new Lock(name, UUID.randomUUID().toString(), new Date(
-				System.currentTimeMillis() + expiry));
+		lock = new Lock(name, UUID.randomUUID().toString(),
+				new Date(System.currentTimeMillis() + expiry));
 		jdbcTemplate.update(createQuery, lock.getName(), lock.getValue(),
 				lock.getExpires());
 		return lock;
@@ -80,34 +84,37 @@ public class JdbcLockService implements LockService {
 	@Transactional(isolation = Isolation.REPEATABLE_READ)
 	public boolean release(String name, String value) throws LockNotHeldException {
 		Lock lock = getLock(name);
-		if (lock!=null) {
+		if (lock != null) {
 			if (!lock.getValue().equals(value)) {
 				throw new LockNotHeldException();
 			}
 			if (lock.isExpired()) {
 				throw new LockNotHeldException();
 			}
+			int changes = jdbcTemplate.update(deleteQuery, lock.getName(),
+					lock.getValue());
+			return changes > 0;
 		}
-		int changes = jdbcTemplate.update(deleteQuery, lock.getName(), lock.getValue());
-		return changes > 0;
+		return false;
 	}
 
 	@Override
 	@Transactional(isolation = Isolation.REPEATABLE_READ)
 	public Lock refresh(String name, String value) throws LockNotHeldException {
 		Lock lock = getLock(name);
-		if (lock!=null) {
+		if (lock != null) {
 			if (!lock.getValue().equals(value)) {
 				throw new LockNotHeldException();
 			}
 			if (lock.isExpired()) {
 				throw new LockNotHeldException();
 			}
-		}
-		int changes = jdbcTemplate.update(refreshQuery, lock.getExpires(),
-				lock.getName(), lock.getValue());
-		if (changes > 0) {
-			return lock;
+
+			int changes = jdbcTemplate.update(refreshQuery, lock.getExpires(),
+					lock.getName(), lock.getValue());
+			if (changes > 0) {
+				return lock;
+			}
 		}
 		throw new LockNotHeldException();
 	}

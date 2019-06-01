@@ -15,21 +15,19 @@
  */
 package locksdemo;
 
+import lombok.Setter;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.util.Assert;
+
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import lombok.Setter;
-
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.util.Assert;
-
 /**
  * @author Dave Syer
- *
  */
 public class RedisLockService implements LockService {
 
@@ -42,17 +40,6 @@ public class RedisLockService implements LockService {
 
 	private final RedisOperations<String, String> redisOperations;
 
-	/**
-	 * The prefix for all lock keys.
-	 * @param prefix the prefix to set for all lock keys
-	 */
-	public void setPrefix(String prefix) {
-		if (!prefix.endsWith(".")) {
-			prefix = prefix + ".";
-		}
-		this.prefix = prefix;
-	}
-
 	public RedisLockService(RedisConnectionFactory redisConnectionFactory) {
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
@@ -61,20 +48,18 @@ public class RedisLockService implements LockService {
 	@Override
 	public Iterable<Lock> findAll() {
 		Set<String> keys = redisOperations.keys(prefix + "*");
-		Set<Lock> locks = new LinkedHashSet<Lock>();
+		Set<Lock> locks = new LinkedHashSet<>();
 		for (String key : keys) {
-			Date expires = new Date(System.currentTimeMillis() + redisOperations.getExpire(key, TimeUnit.MILLISECONDS));
-			locks.add(new Lock(nameForKey(key), redisOperations.opsForValue().get(key), expires));
+			Date expires = new Date(System.currentTimeMillis()
+					+ redisOperations.getExpire(key, TimeUnit.MILLISECONDS));
+			locks.add(new Lock(nameForKey(key), redisOperations.opsForValue().get(key),
+					expires));
 		}
 		return locks;
 	}
 
 	@Override
 	public Lock create(String name) {
-		String stored = getValue(name);
-		if (stored != null) {
-			throw new LockExistsException();
-		}
 		String value = UUID.randomUUID().toString();
 		String key = keyForName(name);
 		if (!redisOperations.opsForValue().setIfAbsent(key, value)) {
@@ -88,9 +73,9 @@ public class RedisLockService implements LockService {
 	@Override
 	public boolean release(String name, String value) {
 		String stored = getValue(name);
-		if (stored != null && value.equals(stored)) {
+		if (value.equals(stored)) {
 			String key = keyForName(name);
-			redisOperations.delete(key);			
+			redisOperations.delete(key);
 			return true;
 		}
 		if (stored != null) {
@@ -103,7 +88,7 @@ public class RedisLockService implements LockService {
 	public Lock refresh(String name, String value) {
 		String key = keyForName(name);
 		String stored = getValue(name);
-		if (stored != null && value.equals(stored)) {
+		if (value.equals(stored)) {
 			Date expires = new Date(System.currentTimeMillis() + expiry);
 			redisOperations.expire(key, expiry, TimeUnit.MILLISECONDS);
 			return new Lock(name, value, expires);
@@ -113,13 +98,13 @@ public class RedisLockService implements LockService {
 
 	private String getValue(String name) {
 		String key = keyForName(name);
-		String stored = redisOperations.opsForValue().get(key);
-		return stored;
+		return redisOperations.opsForValue().get(key);
 	}
 
 	private String nameForKey(String key) {
 		if (!key.startsWith(prefix)) {
-			throw new IllegalStateException("Key (" + key + ") does not start with prefix (" + prefix + ")");
+			throw new IllegalStateException(
+					"Key (" + key + ") does not start with prefix (" + prefix + ")");
 		}
 		return key.substring(prefix.length());
 	}

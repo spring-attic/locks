@@ -32,47 +32,49 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
 /**
  * @author Dave Syer
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes=TestConfiguration.class)
+@SpringApplicationConfiguration(classes = TestConfiguration.class)
 @IntegrationTest("spring.datasource.schema=classpath:/locks-schema.sql")
 public class JdbcLockServiceTests extends AbstractLockServiceTests {
 
 	@Autowired
 	private JdbcLockService service;
-	
+
 	@Autowired
 	private DataSource dataSource;
-	
+
 	@Before
 	public void init() {
 		super.init();
 		service.setExpiry(30000);
 		new JdbcTemplate(dataSource).update("DELETE FROM LOCKS");
 	}
-	
+
 	@Override
 	protected LockService getLockService() {
 		return service;
 	}
-	
+
 	@Override
 	protected void setExpiry(long expiry) {
 		getLockService();
 		service.setExpiry(expiry);
-	}	
+	}
 
 	@Configuration
-	@Import({DataSourceAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class})
+	@Import({ DataSourceAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected static class TestConfiguration {
+
 		@Bean
 		public JdbcLockService lockService(DataSource dataSource) {
 			return new JdbcLockService(dataSource);
 		}
+
 	}
-	
+
 }

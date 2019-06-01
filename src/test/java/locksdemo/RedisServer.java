@@ -97,9 +97,10 @@ public class RedisServer implements TestRule {
 
 				@Override
 				public void evaluate() throws Throwable {
-					Assume.assumeTrue("Skipping test due to "
-							+ RedisServer.this.resourceDescription
-							+ " not being available", false);
+					Assume.assumeTrue(
+							"Skipping test due to " + RedisServer.this.resourceDescription
+									+ " not being available",
+							false);
 				}
 			};
 		}
@@ -122,7 +123,6 @@ public class RedisServer implements TestRule {
 
 	/**
 	 * Perform cleanup of the {@link #resource} field, which is guaranteed to be non null.
-	 *
 	 * @throws Exception any exception thrown by this method will be logged and swallowed
 	 */
 	protected void cleanupResource() throws Exception {

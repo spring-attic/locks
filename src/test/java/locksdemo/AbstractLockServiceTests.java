@@ -33,14 +33,14 @@ public abstract class AbstractLockServiceTests {
 	private LockService service;
 
 	protected abstract LockService getLockService();
-	
+
 	protected abstract void setExpiry(long expires);
-	
+
 	@Before
 	public void init() {
 		service = getLockService();
 	}
-	
+
 	@Test
 	public void createLock() {
 		assertNotNull(service.create("foo"));

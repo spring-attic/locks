@@ -21,21 +21,23 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @WebAppConfiguration
 @IntegrationTest("server.port=0")
 public class ApplicationTests {
-	
+
 	@Value("${local.server.port}")
 	private int port = 0;
 
 	@Test
 	public void locksLoad() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = new TestRestTemplate().getForEntity("http://localhost:" + port, List.class);
+		ResponseEntity<List> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + port, List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
 	@Test
 	public void createLock() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().postForEntity("http://localhost:" + port + "/foo", "bar", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.postForEntity("http://localhost:" + port + "/foo", "bar", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
